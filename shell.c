@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
+#include <unistd.h>
+#include <sys/wait.h>
 void name(){
         char* line = NULL;
         size_t len =0;
@@ -31,9 +32,8 @@ void prse(char* response){
                 if (pos >= len) break;  // reached end
                 
                 char* term = calloc(strlen(response), sizeof(char));
-                int term_idx = 0;  // position within current word
+                int term_idx = 0; 
                 
-                // Copy characters until space or end
                 while (pos < len && response[pos] != ' ') {
                         term[term_idx] = response[pos];
                         term_idx++;
@@ -45,9 +45,14 @@ void prse(char* response){
                 j++;
         }
         
-        // Print the array
-        for(int i = 0; i < j; i++){
-                printf("arg[%d] = %s\n", i, terms[i]);
+        pid_t pid = fork();
+        
+        if (pid == 0) {
+                execvp(terms[0], terms);
+                perror("execvp failed");
+		exit(1);
+        } else {
+                wait(NULL);
         }
 }
 
