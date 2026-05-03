@@ -1,0 +1,2 @@
+ifndef start
+def start
